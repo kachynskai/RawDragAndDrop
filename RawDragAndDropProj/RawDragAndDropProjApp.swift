@@ -11,7 +11,8 @@ import SwiftUI
 struct RawDragAndDropProjApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+//            NotesListView()
+            BookSearchView()
         }
     }
 }

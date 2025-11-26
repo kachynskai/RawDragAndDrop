@@ -9,3 +9,13 @@
 ## Плановані фічі
 - [ ] Реалізувати DropDelegate
 - [ ] Зробити анімацію переміщення
+
+## Project Structure
+
+```
+RawDragAndDropProj/
+├── Views/                # SwiftUI views
+├── Models/               # Data models
+├── ViewModels/           # Business logic
+└── Services/             # Utilities
+```

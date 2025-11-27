@@ -2,8 +2,6 @@
 //  BookSearchVM.swift
 //  RawDragAndDropProj
 //
-//  Created by Iryna on 26.11.2025.
-//
 
 import Foundation
 import Combine

@@ -2,17 +2,18 @@
 //  RawDragAndDropProjApp.swift
 //  RawDragAndDropProj
 //
-//  Created by Iryna on 18.11.2025.
-//
 
 import SwiftUI
+internal import CoreData
 
 @main
 struct RawDragAndDropProjApp: App {
+    let persistenceController = PersistenceController.shared
     var body: some Scene {
         WindowGroup {
 //            NotesListView()
             BookSearchView()
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
 }

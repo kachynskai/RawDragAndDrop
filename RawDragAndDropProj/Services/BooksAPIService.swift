@@ -2,8 +2,7 @@
 //  BookAPIService.swift
 //  RawDragAndDropProj
 //
-//  Created by Iryna on 26.11.2025.
-//
+
 import Foundation
 final class BooksAPIService {
     static let shared = BooksAPIService()

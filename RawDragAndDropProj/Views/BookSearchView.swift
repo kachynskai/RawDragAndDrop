@@ -2,8 +2,6 @@
 //  BookSearchView.swift
 //  RawDragAndDropProj
 //
-//  Created by Iryna on 26.11.2025.
-//
 
 import SwiftUI
 
@@ -20,14 +18,13 @@ struct BookSearchView: View {
                 Button(action: {
                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                     seachVM.performSearch()
-                })
-                {
+                }, label: {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(Color(.white))
                         .padding(8)
                         .background(Color.blue)
                         .cornerRadius(5)
-                }
+                })
             }
             .padding()
             

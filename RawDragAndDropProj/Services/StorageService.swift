@@ -18,7 +18,7 @@ final class StorageService {
     func fetchAllBooks() -> [Book] {
         let request: NSFetchRequest<Book> = Book.fetchRequest()
 
-        request.sortDescriptors = [NSSortDescriptor(keyPath: \Book.sortIndex, ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \Book.sortIndex, ascending: false)]
         
         do {
             return try context.fetch(request)
@@ -32,7 +32,7 @@ final class StorageService {
         let request: NSFetchRequest<Book> = Book.fetchRequest()
         
         request.predicate = NSPredicate(format: "status == %@", status.rawValue)
-        request.sortDescriptors = [NSSortDescriptor(keyPath: \Book.sortIndex, ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \Book.sortIndex, ascending: false)]
         
         do {
             return try context.fetch(request)
@@ -55,8 +55,7 @@ final class StorageService {
         newBook.currentPage = 0
         newBook.readingStatus = .wantToRead
         
-        let curMin = getCurMinIndex()
-        newBook.sortIndex = curMin - 1
+        newBook.sortIndex = Int64(Date().timeIntervalSince1970)
         
         saveData()
         
@@ -65,9 +64,7 @@ final class StorageService {
     func updateStatus(for book: Book, newStatus: BookStatus) {
         switch (book.readingStatus, newStatus) {
         case (_, .finished):
-            if book.pageCount > 0 {
-                book.currentPage = book.pageCount
-            }
+            book.currentPage = book.pageCount
         case (.finished, .reading):
             break
         case (_, .wantToRead):
@@ -81,28 +78,27 @@ final class StorageService {
     
     func updateProgress(book: Book, newPage: Int) {
         book.currentPage = Int16(newPage)
+        let neededStatus: BookStatus
         
-        if book.pageCount > 0 && newPage >= book.pageCount {
-            updateStatus(for: book, newStatus: .finished)
+        if newPage == 0 {
+            neededStatus = .wantToRead
+        } else if book.pageCount > 0 && newPage >= book.pageCount {
+            neededStatus = .finished
         } else {
-            if book.readingStatus == .wantToRead && newPage > 0 {
-                updateStatus(for: book, newStatus: .reading)
-            } else {
-                saveData()
-            }
+            neededStatus = .reading
         }
+        
+        if book.readingStatus != neededStatus {
+            updateStatus(for: book, newStatus: neededStatus)
+        }
+        saveData()
     }
     
     func deleteBook(_ book: Book) {
         context.delete(book)
         saveData()
     }
-    
-    private func getCurMinIndex() -> Int64 {
-        let allBooks = fetchAllBooks()
-        return (allBooks.first?.sortIndex ?? 0)
-    }
-    
+
     private func saveData() {
         if context.hasChanges {
             do {

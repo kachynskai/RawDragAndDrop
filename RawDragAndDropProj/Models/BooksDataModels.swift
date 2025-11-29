@@ -38,7 +38,6 @@ extension Book {
     }
     
     var progressValue: Double {
-        guard pageCount > 0 else { return 0.0 }
         let value = Double(currentPage) / Double(pageCount)
         return min(max(value, 0.0), 1.0)
     }

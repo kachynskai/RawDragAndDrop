@@ -12,7 +12,8 @@ struct RawDragAndDropProjApp: App {
     var body: some Scene {
         WindowGroup {
 //            NotesListView()
-            BookSearchView()
+//            BookSearchView()
+            MainTabView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

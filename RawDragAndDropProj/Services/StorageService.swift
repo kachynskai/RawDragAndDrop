@@ -18,7 +18,7 @@ final class StorageService {
     func fetchAllBooks() -> [Book] {
         let request: NSFetchRequest<Book> = Book.fetchRequest()
 
-        request.sortDescriptors = [NSSortDescriptor(keyPath: \Book.sortIndex, ascending: false)]
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \Book.libraryIndex, ascending: true)]
         
         do {
             return try context.fetch(request)
@@ -32,7 +32,7 @@ final class StorageService {
         let request: NSFetchRequest<Book> = Book.fetchRequest()
         
         request.predicate = NSPredicate(format: "status == %@", status.rawValue)
-        request.sortDescriptors = [NSSortDescriptor(keyPath: \Book.sortIndex, ascending: false)]
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \Book.sortIndex, ascending: true)]
         
         do {
             return try context.fetch(request)
@@ -55,7 +55,9 @@ final class StorageService {
         newBook.currentPage = 0
         newBook.readingStatus = .wantToRead
         
-        newBook.sortIndex = Int64(Date().timeIntervalSince1970)
+        newBook.sortIndex = Int64(0 - Date().timeIntervalSince1970)
+        let currentMin = getMinLibraryIndex()
+        newBook.libraryIndex = currentMin - 1
         
         saveData()
         
@@ -98,8 +100,21 @@ final class StorageService {
         context.delete(book)
         saveData()
     }
+    
+    private func getMinLibraryIndex() -> Int64 {
+            let request: NSFetchRequest<Book> = Book.fetchRequest()
+            request.sortDescriptors = [NSSortDescriptor(keyPath: \Book.libraryIndex, ascending: true)]
+            request.fetchLimit = 1
+            
+            do {
+                let result = try context.fetch(request).first
+                return result?.libraryIndex ?? 0
+            } catch {
+                return 0
+            }
+        }
 
-    private func saveData() {
+    func saveData() {
         if context.hasChanges {
             do {
                 try context.save()

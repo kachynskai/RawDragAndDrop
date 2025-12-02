@@ -5,6 +5,7 @@
 
 import Combine
 import Foundation
+import SwiftUI
 
 final class LibraryVM: ObservableObject {
     @Published var bookList: [Book] = []
@@ -12,6 +13,16 @@ final class LibraryVM: ObservableObject {
     
     func fetchBooks() {
         self.bookList = StorageService.shared.fetchAllBooks()
+    }
+    
+    func moveBooks(from source: IndexSet, to destination: Int) {
+        bookList.move(fromOffsets: source, toOffset: destination)
+        
+        for (index, book) in bookList.enumerated() {
+            book.libraryIndex = Int64(index)
+        }
+
+        StorageService.shared.saveData()
     }
     
     func deleteBook(at offsets: IndexSet) {

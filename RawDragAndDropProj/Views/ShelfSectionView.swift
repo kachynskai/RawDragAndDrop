@@ -3,11 +3,16 @@
 //  RawDragAndDropProj
 //
 import SwiftUI
+internal import UniformTypeIdentifiers
 
 struct ShelfSectionView: View {
     let title: String
     let books: [Book]
     let color: Color
+    
+    let status: BookStatus
+    @ObservedObject var viewModel: ShelfVM
+    @Binding var draggedBook: Book?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -30,6 +35,15 @@ struct ShelfSectionView: View {
                 Text("Тут поки пусто")
                     .foregroundColor(.gray)
                     .frame(maxWidth: .infinity)
+                    .onDrop(of: [.text], isTargeted: nil) { _ in
+                        if let draggedBook = draggedBook {
+                            withAnimation {
+                                viewModel.moveBookBetweenLists(book: draggedBook, to: 0, targetStatus: status)
+                            }
+                            return true
+                        }
+                        return false
+                    }
                 Spacer()
             } else {
                 VStack(spacing: 0) {
@@ -39,6 +53,16 @@ struct ShelfSectionView: View {
                                 ShelfRow(book: book)
                             }
                             .buttonStyle(.plain)
+                            .onDrag {
+                                self.draggedBook = book
+                                return NSItemProvider(object: (book.title ?? "") as NSString)
+                            }
+                            .onDrop(of: [.text], delegate: BookDropDelegate(
+                                item: book,
+                                listType: status,
+                                viewModel: viewModel,
+                                curDraggedBook: $draggedBook
+                            ))
                             if book != books.last {
                                 Divider()
                             }

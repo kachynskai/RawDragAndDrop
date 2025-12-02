@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+internal import UniformTypeIdentifiers
 
 struct LibraryView: View {
     @StateObject private var libraryVM = LibraryVM()
@@ -17,6 +18,7 @@ struct LibraryView: View {
                     }
                 }
                 .onDelete(perform: libraryVM.deleteBook)
+                .onMove(perform: libraryVM.moveBooks)
             }
             .listStyle(.plain)
             .navigationTitle("Всі книги")
